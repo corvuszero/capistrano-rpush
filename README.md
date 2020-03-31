@@ -78,6 +78,7 @@ The following configurable options are available, and listed with their defaults
 
 ```ruby
   set :rpush_role, :app
+  set :rpush_processes, 1
   set :rpush_env,  -> { fetch(:rack_env, fetch(:rails_env, fetch(:stage))) }
   set :rpush_conf, -> { File.join(shared_path, 'config', 'rpush.rb') }
   set :rpush_log,  -> { File.join(shared_path, 'log', 'rpush.log') }

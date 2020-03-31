@@ -15,10 +15,12 @@ namespace :rpush do
   task :restart do
     on roles (fetch(:rpush_role)) do |role|
       git_plugin.rpush_switch_user(role) do
-        if test "[ -f #{fetch(:rpush_pid)} ]"
-          invoke 'rpush:stop'
+        git_plugin.each_process_with_index(reverse: true) do |pid_file, index|
+          if git_plugin.pid_file_exists?(pid_file) && git_plugin.process_exists?(pid_file)
+            git_plugin.stop_rpush(pid_file)
+          end
         end
-        invoke 'rpush:start'
+        git_plugin.start_rpush(pid_file)
       end
     end
   end
@@ -32,9 +34,9 @@ namespace :rpush do
         else
           invoke 'rpush:check'
         end
-        within current_path do
-          with rack_env: fetch(:rpush_env) do
-            execute :rpush, "start -p #{fetch(:rpush_pid)} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
+        git_plugin.each_process_with_index do |pid_file, index|
+          unless git_plugin.pid_file_exists?(pid_file) && git_plugin.process_exists?(pid_file)
+            git_plugin.start_rpush(pid_file, index)
           end
         end
       end
@@ -46,11 +48,7 @@ namespace :rpush do
     on roles (fetch(:rpush_role)) do |role|
       git_plugin.rpush_switch_user(role) do
         if test "[ -f #{fetch(:rpush_conf)} ]"
-          within current_path do
-            with rack_env: fetch(:rpush_env) do
-              execute :rpush, "status -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
-            end
-          end
+          git_plugin.status_rpush
         end
       end
     end
@@ -60,11 +58,9 @@ namespace :rpush do
   task :stop do
     on roles (fetch(:rpush_role)) do |role|
       git_plugin.rpush_switch_user(role) do
-        if test "[ -f #{fetch(:rpush_pid)} ]"
-          within current_path do
-            with rack_env: fetch(:rpush_env) do
-              execute :rpush, "stop -p #{fetch(:rpush_pid)} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
-            end
+        git_plugin.each_process_with_index(reverse: true) do |pid_file, index|
+          if git_plugin.pid_file_exists?(pid_file) && git_plugin.process_exists?(pid_file)
+            git_plugin.stop_rpush(pid_file)
           end
         end
       end

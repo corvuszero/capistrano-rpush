@@ -11,6 +11,7 @@ class Capistrano::Rpush < Capistrano::Plugin
   def set_defaults
     set_if_empty :rpush_default_hooks, true
     set_if_empty :rpush_role,          :app
+    set_if_empty :rpush_processes,     1
     set_if_empty :rpush_env,           -> { fetch(:rack_env, fetch(:rails_env, fetch(:stage))) }
     set_if_empty :rpush_conf,          -> { File.join(current_path, 'config', 'initializers', 'rpush.rb') }
     set_if_empty :rpush_log,           -> { File.join(shared_path, 'log', 'rpush.log') }
