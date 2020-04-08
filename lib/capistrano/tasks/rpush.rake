@@ -68,7 +68,7 @@ namespace :rpush do
   end
 
   def each_process_with_index reverse: false
-    pid_file_list = git_plugin.pid_files
+    pid_file_list = pid_files
     pid_file_list.reverse! if reverse
     pid_file_list.each_with_index do |pid_file, index|
       yield(pid_file, index)
@@ -77,7 +77,7 @@ namespace :rpush do
 
   def pid_files
     Array.new(fetch(:rpush_processes)) do |index|
-          fetch(:rpush_pid).gsub(/\.pid$/, "-#{index}.pid")
+      fetch(:rpush_pid).gsub(/\.pid$/, "-#{index}.pid")
     end
   end
 
