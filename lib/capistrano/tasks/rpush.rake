@@ -15,12 +15,12 @@ namespace :rpush do
   task :restart do
     on roles (fetch(:rpush_role)) do |role|
       git_plugin.rpush_switch_user(role) do
-        each_process_with_index(reverse: true) do |pid_file, index|
-          if pid_file_exists?(pid_file) && process_exists?(pid_file)
-            stop_rpush(pid_file)
+        git_plugin.each_process_with_index(reverse: true) do |pid_file, index|
+          if git_plugin.pid_file_exists?(pid_file) && git_plugin.process_exists?(pid_file)
+            git_plugin.stop_rpush(pid_file)
           end
         end
-        start_rpush(pid_file)
+        git_plugin.start_rpush(pid_file)
       end
     end
   end
@@ -34,9 +34,9 @@ namespace :rpush do
         else
           invoke 'rpush:check'
         end
-        each_process_with_index do |pid_file, index|
+        git_plugin.each_process_with_index do |pid_file, index|
           unless pid_file_exists?(pid_file) && process_exists?(pid_file)
-            start_rpush(pid_file, index)
+            git_plugin.start_rpush(pid_file, index)
           end
         end
       end
@@ -48,7 +48,7 @@ namespace :rpush do
     on roles (fetch(:rpush_role)) do |role|
       git_plugin.rpush_switch_user(role) do
         if test "[ -f #{fetch(:rpush_conf)} ]"
-          status_rpush
+          git_plugin.status_rpush
         end
       end
     end
@@ -58,9 +58,9 @@ namespace :rpush do
   task :stop do
     on roles (fetch(:rpush_role)) do |role|
       git_plugin.rpush_switch_user(role) do
-        each_process_with_index(reverse: true) do |pid_file, index|
-          if pid_file_exists?(pid_file) && process_exists?(pid_file)
-            stop_rpush(pid_file)
+        git_plugin.each_process_with_index(reverse: true) do |pid_file, index|
+          if git_plugin.pid_file_exists?(pid_file) && git_plugin.process_exists?(pid_file)
+            git_plugin.stop_rpush(pid_file)
           end
         end
       end
@@ -68,7 +68,7 @@ namespace :rpush do
   end
 
   def each_process_with_index reverse: false
-    pid_file_list = pid_files
+    pid_file_list = git_plugin.pid_files
     pid_file_list.reverse! if reverse
     pid_file_list.each_with_index do |pid_file, index|
       yield(pid_file, index)
