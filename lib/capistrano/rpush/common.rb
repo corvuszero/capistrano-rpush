@@ -36,11 +36,11 @@ module Capistrano
       end
 
       def pid_file_exists?(pid_file)
-        test(*("[ -f #{pid_file} ]").split(' '))
+        test("[ -f #{pid_file} ]")
       end
 
       def process_exists?(pid_file)
-        test(*("kill -0 $( cat #{pid_file} )").split(' '))
+        test("kill -0 $( cat #{pid_file} )")
       end
 
       def stop_rpush(pid_file)
