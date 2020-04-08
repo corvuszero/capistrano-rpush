@@ -21,7 +21,7 @@ module Capistrano
         role.user
       end
 
-      def each_process_with_index(reverse: false)
+      def each_process_with_index reverse: false
         pid_file_list = pid_files
         pid_file_list.reverse! if reverse
         pid_file_list.each_with_index do |pid_file, index|
@@ -35,15 +35,15 @@ module Capistrano
         end
       end
 
-      def pid_file_exists?(pid_file)
-        test("[ -f #{pid_file} ]")
+      def pid_file_exists? pid_file
+        test "[ -f #{pid_file} ]"
       end
 
-      def process_exists?(pid_file)
-        test("kill -0 $( cat #{pid_file} )")
+      def process_exists? pid_file
+        test "kill -0 $( cat #{pid_file} )"
       end
 
-      def stop_rpush(pid_file)
+      def stop_rpush pid_file
         within current_path do
           with rack_env: fetch(:rpush_env) do
             execute :rpush, "stop -p #{pid_file.to_s} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
@@ -51,7 +51,7 @@ module Capistrano
         end
       end
 
-      def start_rpush(pid_file)
+      def start_rpush pid_file
         within current_path do
           with rack_env: fetch(:rpush_env) do
             execute :rpush, "start -p #{pid_file.to_s} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
