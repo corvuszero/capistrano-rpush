@@ -24,7 +24,7 @@ namespace :rpush do
           if test("[ -f #{pid_file} ]") && test("kill -0 $( cat #{pid_file} )")
             within current_path do
               with rack_env: fetch(:rpush_env) do
-                execute :rpush, "stop -p #{pid_file.to_s} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
+                execute :timeout, "-s SIGKILL #{fetch(:rpush_stop_timeout)}", :rpush, "stop -p #{pid_file.to_s} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
               end
             end
           end
@@ -94,7 +94,7 @@ namespace :rpush do
           unless test("[ -f #{pid_file} ]") && test("kill -0 $( cat #{pid_file} )")
             within current_path do
               with rack_env: fetch(:rpush_env) do
-                execute :rpush, "stop -p #{pid_file.to_s} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
+                execute :timeout, "-s SIGKILL #{fetch(:rpush_stop_timeout)}", :rpush, "stop -p #{pid_file.to_s} -c #{fetch(:rpush_conf)} -e #{fetch(:rpush_env)}"
               end
             end
           end
